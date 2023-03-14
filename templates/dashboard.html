@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Dashboard Page</title>
+</head>
+<body>
+	<h1>Welcome to the Dashboard, {{ user[1] }}!</h1>
+	<p>Your user ID is {{ user[0] }}, your email is {{ user[2] }}, and your password is {{ user[3] }}.</p>
+	<form method="POST" action="/logout">
+		<input type="submit" value="Logout">
+	</form>
+</body>
+</html>
