@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Montserrat Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles_structure.css">
+    <link rel="stylesheet" href="static/dashboard.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-div">
+          Logo
+        </div>
+        <span class="material-icons-outlined">search</span>
+      </div>
+      <div class="header-right">
+        <span class="material-icons-outlined">notifications</span>
+        <span class="material-icons-outlined">email</span>
+        <span class="material-icons-outlined">account_circle</span>
+      </div>
+    </header>
+    <!-- End Header -->
+    <div id="main-div" class="clearfix">
+      <div id="sidebar" >
+        side bar
+      </div>
+      <div id="bodyarea-div" class="clearfix" >
+        <div class="box-patients">
+          <h2>Seniorer</h2>
+          <div class="sub-box-container">
+            {% for home_id, people in homes.items() %}
+            <div class="sub-box">
+              <h3>{{ home_id }}</h3>
+              {% for person in people %}
+              <a href="profile/{{ person.name }}">
+                <div class="patient-info">
+                  <h4>{{ person.name }}</h4>
+                  <p>Ålder: {{ person.age }}</p>
+                  <p>Kön: {{ person.gender }}</p>
+                  <img alt="" class="image-18" src="https://static.overlay-tech.com/assets/175c28fe-2ecc-4ad7-b33b-fda762350472.png" />
+                </div>
+              </a>
+              {% endfor %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="box-calender">
+          Box2
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
