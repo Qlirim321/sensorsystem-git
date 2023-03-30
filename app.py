@@ -47,14 +47,14 @@ def index():
 def login():
     if request.method == 'POST':
         # Hämta användardata från formuläret
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
 
         # Skapa en cursor för att utföra MySQL-frågor
 
 
-        # Kör en MySQL-fråga för att hämta användardata baserat på användarnamn och lösenord
-        sql.execute("SELECT id, name, email, password FROM users WHERE name = %s AND password = %s", (username, password))
+        # Kör en MySQL-fråga för att hämta användardata baserat på e-post och lösenord
+        sql.execute("SELECT id, name, email, password FROM users WHERE email = %s AND password = %s", (email, password))
         user = sql.fetchone()
 
         if user:
