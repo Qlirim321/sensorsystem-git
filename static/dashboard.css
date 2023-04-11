@@ -1,0 +1,167 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #e6e8ed;
+  color: #6666;
+  font-family: "Montserrat", sans-serif;
+}
+
+.material-icons-outlined {
+  vertical-align: middle;
+  line-height: 1px;
+}
+
+.text-primary {
+  color: #666666;
+}
+
+.text-blue {
+  color: #246dec;
+}
+
+.text-green {
+  color: #3ccc62;
+}
+
+.text-green {
+  color: #367952;
+}
+
+.text-orange {
+  color: #f5b74f;
+}
+
+.font-weight-bold {
+  font-weight: 600;
+}
+
+/* added style for household members */
+.household-member:not(:last-child) {
+  border-bottom: none;
+}
+
+.household-member:active {
+  color: green;
+  }
+
+/* ---------- HEADER ---------- */
+
+.header {
+  grid-area: header;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px 0 30px;
+  box-shadow: 0 6px 7px -4px rgba(0, 0, 0, 0.2);
+  height: 120px;
+  left: 0px;
+  top: 0px;
+  margin-bottom: 10px;
+
+  background: #FFFFFF;
+}
+
+.logo-div {
+  width:50%
+}
+
+/* ---------- SIDEBAR ---------- */
+
+#main-div {
+  width: 100%;
+  background-color: gray;
+  margin:0 auto;
+}
+
+#sidebar {
+
+  color: #9799ab;
+  overflow-y: auto;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  width: 10%;
+  min-height: 750px;
+  float: left;
+  box-shadow: 0 6px 7px -4px rgba(0, 0, 0, 0.2);
+  background: #FFFCFC;
+}
+
+#bodyarea-div {
+  width: 87%;
+  float: right;
+  margin-top: 3%;
+  margin-left: 3%;
+}
+
+.clearfix::after {
+  content: "";
+
+}
+
+.box-patients {
+  width: 65%;
+  min-height: 400px;
+  background-color:  #FFFCFC;
+  float: left;
+  box-shadow: 0 6px 7px -4px rgba(0, 0, 0, 0.2);
+
+}
+
+.box-calender {
+  width: 29%;
+  min-height: 400px;
+  background-color: #FFFCFC;
+  float: left;
+  margin-left: 10px;
+  margin-right: 3%;
+  box-shadow: 0 6px 7px -4px rgba(0, 0, 0, 0.2);
+
+}
+
+.patient-info {
+  border: 1px solid grey;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.image-18 {
+  width: 25%; /* mindre storlek */
+  align-self: stretch;
+  box-shadow: none; /* ta bort skuggan */
+  object-fit: cover;
+}
+
+.image-18:not(:last-of-type) {
+  margin-right: 60px;
+}
+
+.patient-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.material-icons-outlined.symbol {
+  font-size: 3cm;
+  vertical-align: middle;
+  margin-right: 0.5cm;
+}
+
+/* added style for sub-boxes */
+/* Tyvärr hårdkodad antalet kolumner */
+.sub-box-container {
+  display: grid;
+  grid-template-columns: repeat(3, 8cm);
+  grid-template-rows: repeat(1, 8cm);
+  grid-gap: 0px;
+}
+
+
+input:focus {
+  color: green;
+}
