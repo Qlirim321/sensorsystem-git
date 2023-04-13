@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, abort, flash
+from flask import Flask, render_template, request, redirect, url_for, session, abort, flash, jsonify
 from flask import request
 from flask_mysqldb import MySQL
 from builtins import sorted
@@ -36,10 +36,28 @@ sql= cnx.cursor(dictionary=True)
 
 
 mysql = MySQL(app)
+@app.route('/search')
+def search():
+    query = request.args.get('query', '')
+    sql.execute("SELECT name, address, pers_nr FROM senior WHERE name LIKE %s OR address LIKE %s OR pers_nr LIKE %s", ('%'+query+'%', '%'+query+'%', '%'+query+'%'))
+    results = sql.fetchall()
+    cnx.commit()
+    return jsonify(results)
+
+@app.route('/search_results')
+def search_results():
+    query = request.args.get('query', '')
+    sql.execute("SELECT name, address, pers_nr FROM senior WHERE name LIKE %s OR address LIKE %s OR pers_nr LIKE %s", ('%'+query+'%', '%'+query+'%', '%'+query+'%'))
+    results = sql.fetchall()
+    cnx.commit()
+    return render_template('search_results.html', results=results)
+
+
 @app.route('/dashboard')
 def dashboard():
+    query = request.args.get('query', '')
     # Hämta data från databasen
-    sql.execute("SELECT pers_nr, hub_id, name, age, email, phone, address FROM senior")
+    sql.execute("SELECT pers_nr, hub_id, name, age, email, phone, address, warning FROM senior WHERE name LIKE %s OR address LIKE %s OR pers_nr LIKE %s", ('%'+query+'%', '%'+query+'%', '%'+query+'%'))
     seniorer = sql.fetchall()
     cnx.commit()
 
@@ -53,15 +71,22 @@ def dashboard():
     seniorer_sorted = sorted(seniorer_grouped.items(), key=lambda x: x[0])
 
     # Skicka data till mallen
-    return render_template('dashboard.html', seniorer_grouped=seniorer_grouped, seniorer_sorted=seniorer_sorted)
+    return render_template('dashboard.html', seniorer_grouped=seniorer_grouped, seniorer_sorted=seniorer_sorted, query=query)
+
+@app.route('/profile/<name>')
+def profile(name):
+    sql.execute("SELECT * FROM senior WHERE name = %s", (name,))
+    result = sql.fetchall()
+    cnx.commit()
+    home = ""
+    for row in result:
+        home = row['hub_id']
+    return render_template('profile.html', name=name, home=home)
 
 @app.route("/")
 def hello():
     return render_template('home.html')
 
-@app.route('/')
-def index():
-    return render_template('login.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -104,15 +129,6 @@ def signup():
 @app.route('/about')
 def about():
     return render_template('about.html')
-@app.route('/profile/<name>')
-def profile(name):
-    sql.execute("SELECT * FROM senior WHERE name = %s", (name,))
-    result = sql.fetchall()
-    cnx.commit()
-    home = ""
-    for row in result:
-        home = row['hub_id']
-    return render_template('profile.html', name=name, home=home)
 
 # Route för att hantera POST-requests från edit-formulären
 @app.route('/edit', methods=['POST'])

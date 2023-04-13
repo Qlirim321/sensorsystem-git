@@ -165,3 +165,23 @@ body {
 input:focus {
   color: green;
 }
+
+.status-symbol {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+
+.green {
+  background-color: #3ccc62;
+}
+
+.orange {
+  background-color: #f5b74f;
+}
+
+.red {
+  background-color: #f56b6b;
+}

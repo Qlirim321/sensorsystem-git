@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sök resultat</title>
+</head>
+<body>
+  <h1>Sök resultat</h1>
+  {% if results %}
+    <ul>
+      {% for result in results %}
+        <li><a href="{{ url_for('profile', name=result['name']) }}">{{ result['name'] }}</a> - {{ result['address'] }} - {{ result['pers_nr'] }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No results found.</p>
+  {% endif %}
+</body>
+</html>
