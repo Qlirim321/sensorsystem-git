@@ -33,8 +33,6 @@ import mysql.connector as mysql
 cnx= mysql.connect(user="sensor", password="Enesa12345!", host="sensorsystemdb.mysql.database.azure.com", port=3306, database="sensor_test")
 sql= cnx.cursor(dictionary=True)
 
-
-
 mysql = MySQL(app)
 @app.route('/search')
 def search():
@@ -51,7 +49,6 @@ def search_results():
     results = sql.fetchall()
     cnx.commit()
     return render_template('search_results.html', results=results)
-
 
 @app.route('/dashboard')
 def dashboard():
@@ -87,7 +84,6 @@ def profile(name):
 def hello():
     return render_template('home.html')
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -96,7 +92,6 @@ def login():
         password = request.form['password']
 
         # Skapa en cursor för att utföra MySQL-frågor
-
 
         # Kör en MySQL-fråga för att hämta användardata baserat på e-post och lösenord
         sql.execute("SELECT user_id, name, email, password FROM user WHERE email = %s AND password = %s", (email, password))
@@ -113,8 +108,6 @@ def login():
 
     return render_template('login.html')
 
-
-
 @app.route('/logout')
 def logout():
     # Ta bort användardata från sessionsvariabeln
@@ -124,7 +117,6 @@ def logout():
 @app.route('/signup')
 def signup():
     return render_template('signup.html')
-
 
 @app.route('/about')
 def about():
@@ -146,7 +138,6 @@ def edit():
     return redirect(url_for('dashboard'))
 
 # Dashboardens HTML-kod med edit-knappar
-
 
 # Sida med edit-formulär
 @app.route('/edit/<id>')
@@ -190,7 +181,6 @@ def signup_post():
 @app.route("/error")
 def error():
     abort(500, "oh no some error!")
-
 
 if __name__ == "__main__":
     app.secret_key = 'your_secret_key'
