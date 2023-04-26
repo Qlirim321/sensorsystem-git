@@ -56,97 +56,6 @@ def updt_warning():
     sql.execute(query)
     cnx.commit()
 
-updt_warning()
-
-# def upd_war_column():
-
-
-# def update_warning_column():
-
-#     # Definiera kriterierna för att sätta warning-kolumnen till 1 eller 2
-#     criteria = [
-#         ("Kök", range(0, 6), 1),
-#         ("Vardagsrum", range(0, 6), 1),
-#         ("Badrum", range(0, 6), 1),
-#         ("Kök", range(5, 11), 2),
-#         ("Vardagsrum", range(5, 11), 2),
-#         ("Badrum", range(5, 11), 2)
-#     ]
-
-#     # Loopa igenom kriterierna och uppdatera warning-kolumnen i senior-tabellen
-#     for room_name, motion_range, warning_value in criteria:
-#         query = (
-#             f"UPDATE senior s "
-#             f"SET s.warning = {warning_value} "
-#             f"WHERE s.hub_id IN "
-#             f"(SELECT hub_id FROM statistics "
-#             f"WHERE room_name = '{room_name}' "
-#             f"AND motion_count BETWEEN {motion_range.start} AND {motion_range.stop - 1})"
-#         )
-#         sql.execute(query)
-
-#     # Spara ändringarna och stäng anslutningen till databasen
-#     cnx.commit()
-#     sql.close()
-#     sql.close()
-
-# def update_warning_column():
-
-#     # Definiera kriterierna för att sätta warning-kolumnen till 1 eller 2
-#     criteria = [
-#         ("Kök", range(0, 6), 1),
-#         ("Vardagsrum", range(0, 6), 1),
-#         ("Badrum", range(0, 6), 1),
-#         ("Kök", range(5, 11), 2),
-#         ("Vardagsrum", range(5, 11), 2),
-#         ("Badrum", range(5, 11), 2)
-#     ]
-
-#     # Loopa igenom kriterierna och uppdatera warning-kolumnen i senior-tabellen
-#     for room_name, motion_range, warning_value in criteria:
-#         query = (
-#             f"UPDATE senior s "
-#             f"SET s.warning = {warning_value} "
-#             f"WHERE s.hub_id IN "
-#             f"(SELECT hub_id FROM statistics "
-#             f"WHERE room_name = '{room_name}' "
-#             f"AND motion_count BETWEEN {motion_range.start} AND {motion_range.stop - 1})"
-#         )
-#         sql.execute(query)
-
-#     # Spara ändringarna och stäng anslutningen till databasen
-#     cnx.commit()
-#     sql.close()
-#     sql.close()
-# @app.route('/update_warning/<int:hub_id>')
-# def update_warning(hub_id):
-#     # Define conditions to set the value in the senior table
-#     conditions = {
-#         'Kök': {'range1': (0, 5), 'range2': (5, 10), 'value1': 1, 'value2': 2},
-#         'Vardagsrum': {'range1': (0, 5), 'range2': (5, 10), 'value1': 1, 'value2': 2},
-#         'Badrum': {'range1': (0, 5), 'range2': (5, 10), 'value1': 1, 'value2': 2}
-#     }
-
-#     # Update the senior table
-#     for room_name, data in conditions.items():
-#         # Define the motion count range for the current room
-#         range1 = data['range1']
-#         range2 = data['range2']
-#         # Get the motion count for the current room and hub_id
-#         sql.execute("SELECT motion_count FROM statistics WHERE hub_id=%s AND room_name=%s", (hub_id, room_name))
-#         motion_count = sql.fetchone()['motion_count']
-#         # Set the value for the warning column based on the motion count range and update the senior table
-#         if range1[0] <= motion_count <= range1[1]:
-#             value = data['value1']
-#         elif range2[0] <= motion_count <= range2[1]:
-#             value = data['value2']
-#         else:
-#             value = 3
-#         sql.execute("UPDATE senior SET warning=%s WHERE hub_id=%s AND name=%s", (value, hub_id, room_name))
-
-#     cnx.commit()
-#     return f"Warning updated for hub {hub_id}"
-
 @app.route('/search')
 def search():
     query = request.args.get('query', '')
@@ -171,17 +80,19 @@ def dashboard():
     seniorer = sql.fetchall()
     cnx.commit()
 
-    # Gruppera seniorerna efter hub_id och sortera efter hub_id
+    # Sortera seniorerna efter varningsnivå
+    seniorer_sorted = sorted(seniorer, key=lambda x: x['warning'], reverse=True)
+
+    # Gruppera seniorerna efter hub_id
     seniorer_grouped = {}
-    for senior in seniorer:
+    for senior in seniorer_sorted:
         hub_id = senior['hub_id']
         if hub_id not in seniorer_grouped:
             seniorer_grouped[hub_id] = []
         seniorer_grouped[hub_id].append(senior)
-    seniorer_sorted = sorted(seniorer_grouped.items(), key=lambda x: x[0])
 
     # Skicka data till mallen
-    return render_template('dashboard.html', seniorer_grouped=seniorer_grouped, seniorer_sorted=seniorer_sorted, query=query)
+    return render_template('dashboard.html', seniorer_grouped=seniorer_grouped, query=query)
 
 @app.route('/profile/<name>')
 def profile(name):
