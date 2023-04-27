@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, a
 from flask import request
 from flask_mysqldb import MySQL
 from builtins import sorted
-
+#HA
 app = Flask(__name__)
 print(app.config['TEMPLATES_AUTO_RELOAD'])
 
