@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, a
 from flask import request
 from flask_mysqldb import MySQL
 from builtins import sorted
-#HA
+
 app = Flask(__name__)
 print(app.config['TEMPLATES_AUTO_RELOAD'])
 
@@ -13,10 +13,7 @@ app.config['MYSQL_DB'] = 'sensor_test'
 app.config['MYSQL_PORT'] = 3306
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 app.config['MYSQL_SSL_CA'] = '.\DigiCertGlobalRootCA.crt.pem'
-    # cur = mysql.connection.cursor()
-    # cur.execute('''SELECT * FROM sensor''')
-    # rv = cur.fetchall()
-    # return str(rv)
+
 import mysql.connector as mysql
 # MYSQL_USER = 'sensor'  # USER-NAME
 # MYSQL_PASS = 'Enesa12345!'  # MYSQL_PASS
