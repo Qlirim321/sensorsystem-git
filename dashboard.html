@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Dashboard</title>
+  <!-- Montserrat Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles_structure.css">
+  <link rel="stylesheet" href="static/dashboard.css">
+  <link rel="stylesheet" href="calendar_style.css" />
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(function() {
+      var timer; // variabel för att hantera fördröjning
+      $('#search-box').on('input', function() {
+        var query = $(this).val();
+        if (query.length < 1) { // kontrollera om sökrutan är tom eller har mindre än en bokstav
+          $('#search-results').html(''); // rensa sökresultaten
+        } else {
+          // använd en timer för att hantera fördröjning på 500 millisekunder
+          clearTimeout(timer);
+          timer = setTimeout(function() {
+            $.getJSON('/search', {query: query}, function(data) {
+              var html = '';
+              for (var i = 0; i < data.length; i++) {
+                html += '<a href="/profile/' + data[i].name + '"><div class="result">' + data[i].name + ', ' + data[i].address + ', ' + data[i].pers_nr + '</div></a>';
+              }
+              $('#search-results').html(html);
+            });
+          }, 50);
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-div">
+      </div>
+      <span class="material-icons-outlined">search</span>
+      <form class="search-form" method="post" action="{{ url_for('search_results') }}">
+        <input id="search-box" type="text" placeholder="Sök efter senior...">
+      </form>
+      <div id="search-results"></div>
+    </div>
+    <div class="header-right">
+      <a href=""><span class="material-icons-outlined">notifications</span></a>
+      <a href=""><span class="material-icons-outlined">email</span></a>
+      <a href="{{ url_for('user_profile') }}"><span class="material-icons-outlined clickable">account_circle</span></a>
+    </div>
+  </header>
+  <!-- End Header -->
+  <div id="main-div" class="clearfix">
+    <div id="sidebar" >
+      side bar
+    </div>
+    <div id="bodyarea-div" class="clearfix">
+      {% for hub_id, seniorer in seniorer_grouped.items() %}
+        <div class="box-patients">
+          <h2>Seniorer i Hub ID {{ hub_id }}</h2>
+          <div class="sub-box-container">
+            {% for senior in seniorer %}
+              <div class="sub-box">
+                <a href="profile/{{ senior['name'] }}">
+                  <div class="patient-info">
+                    <h4>
+                      {{ senior['name'] }}
+                      <span class="status-symbol {{ 'green' if senior['warning'] == 1 else 'orange' if senior['warning'] == 2 else 'red' }}"></span>
+                    </h4>
+                    <p>Personnummer: {{ senior['pers_nr'] }}</p>
+                    <p>Adress: {{ senior['address'] }}</p>
+                    <p>Telefonnummer: {{ senior['phone'] }}</p>
+                    <img alt="" class="image-18" src="https://static.overlay-tech.com/assets/175c28fe-2ecc-4ad7-b33b-fda762350472.png" />
+                  </div>
+                </a>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+        <div class="box-calender  ">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"/>
+          <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+          <div class="calendar">
+            <div class="month">
+              <i class="fas fa-angle-left prev"></i>
+              <div class="date">
+                <h1></h1>
+                <p></p>
+              </div>
+              <i class="fas fa-angle-right next"></i>
+            </div>
+            <div class="weekdays">
+              <div>Sun</div>
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+            </div>
+            <div class="days"></div>
+          </div>
+        </div>
+      </div>
+
+  </div>
+  <script src="calendar_java.js"></script>
+</body>
+
+</html>
