@@ -75,17 +75,51 @@ body {
   margin:0 auto;
 }
 
-#sidebar {
+
+.sidebar {
 
   color: #9799ab;
   overflow-y: auto;
   transition: all 0.5s;
   -webkit-transition: all 0.5s;
   width: 10%;
-  min-height: 750px;
   float: left;
   box-shadow: 0 6px 7px -4px rgba(0, 0, 0, 0.2);
   background: #FFFCFC;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 13px 30px;
+  border-bottom: 1px solid #10558d;
+  color: rgb(241, 237, 237);
+  position: relative;
+}
+
+.sidebar ul li a i {
+  font-size: 40px;
+  color: #dee4ec;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.sidebar ul li a:hover i,
+.sidebar ul li a.active i {
+  color: #0c7db1;
+  cursor: pointer;
+  font-size: 48px;
+}
+
+.sidebar ul li a span {
+  font-size: 12px;
+  margin-top: 5px;
 }
 
 #bodyarea-div {
@@ -99,6 +133,9 @@ body {
   content: "";
 
 }
+
+/* ---------- Patient Box ---------- */
+
 
 .box-patients {
   width: 65%;
@@ -117,8 +154,8 @@ body {
   margin-left: 10px;
   margin-right: 3%;
   box-shadow: 0 6px 7px -4px rgba(0, 0, 0, 0.2);
-
 }
+
 
 .patient-info {
   border: 1px solid grey;
