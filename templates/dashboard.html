@@ -60,8 +60,30 @@
   </header>
   <!-- End Header -->
   <div id="main-div" class="clearfix">
-    <div id="sidebar" >
-      side bar
+    <div class="sidebar" >
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"/>
+      <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" >
+      <ul class="nav-links">
+        <li>
+          <a href="#" class="active">
+              <i class="fas fa-desktop"></i>
+              <span class="item">Dashboard</span>
+          </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-user-friends"></i>
+                <span class="item">Mina Aktiviteter</span>
+            </a>
+        </li>
+        <li>
+          <a href="#">
+              <i class="fas fa-gear"></i>
+              <span class="item">Inställningar</span>
+          </a>
+        </li>
+      </ul>
+      
     </div>
     <div id="bodyarea-div" class="clearfix">
       {% for hub_id, seniorer in seniorer_grouped.items() %}
