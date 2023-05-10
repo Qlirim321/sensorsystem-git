@@ -13,40 +13,29 @@ app.config['MYSQL_DB'] = 'sensor_test'
 app.config['MYSQL_PORT'] = 3306
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 app.config['MYSQL_SSL_CA'] = '.\DigiCertGlobalRootCA.crt.pem'
-
+    # cur = mysql.connection.cursor()
+    # cur.execute('''SELECT * FROM sensor''')
+    # rv = cur.fetchall()
+    # return str(rv)
 import mysql.connector as mysql
+# MYSQL_USER = 'sensor'  # USER-NAME
+# MYSQL_PASS = 'Enesa12345!'  # MYSQL_PASS
+# MYSQL_DATABASE = 'sensor_test'  # DATABASE_NAME
+
+# connection = mysql.connect(user=MYSQL_USER,
+#                            passwd=MYSQL_PASS,
+#                            database=MYSQL_DATABASE,
+#                            host='sensorsystemdb.mysql.database.azure.com',
+
+#                            port = 3306)
 
 
 cnx= mysql.connect(user="sensor", password="Enesa12345!", host="sensorsystemdb.mysql.database.azure.com", port=3306, database="sensor_test")
 sql= cnx.cursor(dictionary=True)
 
 mysql = MySQL(app)
-
-import mysql.connector
-
-
-def updt_warning():
-    '''Function to update the warning levels of senior citizens based on their motion counts'''
-    query = """
-        UPDATE senior s
-        INNER JOIN (
-          SELECT hub_id,
-            CASE
-              WHEN (room_name = "Kök" AND motion_count BETWEEN 0 AND 5) OR (room_name = "Vardagsrum" AND motion_count BETWEEN 0 AND 5) OR (room_name = "Badrum" AND motion_count BETWEEN 0 AND 5) THEN 1
-              WHEN (room_name = "Kök" AND motion_count BETWEEN 5 AND 10) OR (room_name = "Vardagsrum" AND motion_count BETWEEN 5 AND 10) OR (room_name = "Badrum" AND motion_count BETWEEN 5 AND 10) THEN 2
-              ELSE 3
-            END AS warning
-          FROM statistics
-          WHERE motion_hour IS NOT NULL
-        ) stats ON s.hub_id = stats.hub_id
-        SET s.warning = stats.warning;
-    """
-    sql.execute(query)
-    cnx.commit()
-
 @app.route('/search')
 def search():
-    ''' Enables searching for seniors'''
     query = request.args.get('query', '')
     sql.execute("SELECT name, address, pers_nr FROM senior WHERE name LIKE %s OR address LIKE %s OR pers_nr LIKE %s", ('%'+query+'%', '%'+query+'%', '%'+query+'%'))
     results = sql.fetchall()
@@ -61,46 +50,28 @@ def search_results():
     cnx.commit()
     return render_template('search_results.html', results=results)
 
-@app.route('/search_results_page', methods=['POST'])
-def search_results_page():
-    query = request.form.get('query')
-    if query is None:
-        flash('Missing query parameter')
-        return redirect(url_for('search_results'))
-
-    # Retrieve data from the database
-    sql.execute("SELECT name, address, pers_nr FROM senior WHERE name LIKE %s OR address LIKE %s OR pers_nr LIKE %s", ('%'+query+'%', '%'+query+'%', '%'+query+'%'))
-    results = sql.fetchall()
-    cnx.commit()
-
-    return render_template('search_results.html', results=results)
-
-
 @app.route('/dashboard')
 def dashboard():
-    ''' Overview of all seniors in the database, sorted by alert level and grouped by hub_id'''
     query = request.args.get('query', '')
-    # Retrieve data from the databse
+    # Hämta data från databasen
     sql.execute("SELECT pers_nr, hub_id, name, age, email, phone, address, warning FROM senior WHERE name LIKE %s OR address LIKE %s OR pers_nr LIKE %s", ('%'+query+'%', '%'+query+'%', '%'+query+'%'))
     seniorer = sql.fetchall()
     cnx.commit()
 
-    # Sort seniors based on warning
-    seniorer_sorted = sorted(seniorer, key=lambda x: x['warning'], reverse=True)
-
-    # Group seniors based on hub_id
+    # Gruppera seniorerna efter hub_id och sortera efter hub_id
     seniorer_grouped = {}
-    for senior in seniorer_sorted:
+    for senior in seniorer:
         hub_id = senior['hub_id']
         if hub_id not in seniorer_grouped:
             seniorer_grouped[hub_id] = []
         seniorer_grouped[hub_id].append(senior)
+    seniorer_sorted = sorted(seniorer_grouped.items(), key=lambda x: x[0])
 
-    return render_template('dashboard.html', seniorer_grouped=seniorer_grouped, query=query)
+    # Skicka data till mallen
+    return render_template('dashboard.html', seniorer_grouped=seniorer_grouped, seniorer_sorted=seniorer_sorted, query=query)
 
 @app.route('/profile/<name>')
 def profile(name):
-    '''Hub id and name of senior are sent to profile.html'''
     sql.execute("SELECT * FROM senior WHERE name = %s", (name,))
     result = sql.fetchall()
     cnx.commit()
@@ -129,6 +100,9 @@ def login():
         if user:
             # Spara användardata i en sessionsvariabel
             session['user'] = user
+            session['user_id'] = user['user_id']
+            session['name'] = user['name']
+            session['email'] = user['email']
             return redirect(url_for('dashboard'))
         else:
             # Visa ett felmeddelande om inloggningen misslyckades
@@ -151,6 +125,32 @@ def signup():
 def about():
     return render_template('about.html')
 
+# Route för att hantera POST-requests från edit-formulären
+@app.route('/edit', methods=['POST'])
+def edit():
+    # Hämta data från edit-formuläret
+    id = request.form['id']
+    name = request.form['name']
+    email = request.form['email']
+
+    # Uppdatera informationen i databasen
+    sql.execute("UPDATE senior SET name=%s, email=%s WHERE id=%s", (name, email, id))
+    cnx.commit()
+
+    # Omdirigera till dashboarden
+    return redirect(url_for('dashboard'))
+
+# Dashboardens HTML-kod med edit-knappar
+
+# Sida med edit-formulär
+@app.route('/edit/<id>')
+def edit_form(pers_nr):
+    # Hämta informationen från databasen baserat på ID:t
+    sql.execute("SELECT * FROM senior WHERE pers_nr=%s", (pers_nr,))
+    person = sql.fetchone()
+
+    # Visa formuläret med befintlig information
+    return render_template('edit.html', person=person)
 
 # Edit-formuläret
 @app.route('/signup', methods=['POST'])
@@ -181,10 +181,57 @@ def signup_post():
     return redirect(url_for('signup'))
 
 
+
+@app.route('/user_profile')
+def user_profile():
+    # Check if the user is logged in
+    if 'user_id' not in session:
+        # Redirect the user to the login page
+        return redirect(url_for('login'))
+
+    # Retrieve the user's data from the database
+    sql.execute("SELECT name, email FROM user WHERE user_id = %s", (session['user_id'],))
+    user_data = sql.fetchone()
+    cnx.commit()
+    session['name'] = user_data['name']
+    session['email'] = user_data['email']
+    # # Extract the name and email from the user data tuple
+    # name, email = user_data
+
+    # Render the user profile template with the user's data
+    return render_template('/user_profil.html')
+
+
+# @app.route('/user_profile')
+# def user_profile():
+   
+#     sql.execute("SELECT name, email FROM user WHERE user_id = %s", (session['user_id'],))
+#     user_data = sql.fetchone()
+#     cnx.commit()
+
+#     # Check if the user is logged in
+#     if 'user_id' in session:
+#         # Extract the name and email from the user data tuple
+#         name, email = user_data        
+#         # Redirect the user to the login page
+#         return render_template('/user_profil.html', name=name, email=email)
+
+    # # Retrieve the user's data from the database using the id stored in the session
+    # sql.execute("SELECT name, email FROM user WHERE id = %s", (session['id'],))
+    # user_email = sql.fetchone()
+    # cnx.commit()
+
+    # # Render the user profile template with the user's data
+    # return render_template('user_profil.html', user=user_email)
+
+
+
+
+
 @app.route("/error")
 def error():
     abort(500, "oh no some error!")
 
 if __name__ == "__main__":
     app.secret_key = 'your_secret_key'
-    app.run(debug=True, port=80, host="0.0.0.0")
+    app.run(debug=True, port=8000, host="0.0.0.0")

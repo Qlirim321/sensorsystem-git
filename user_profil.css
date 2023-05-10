@@ -1,0 +1,33 @@
+* {
+    background-color: #7C96AB;
+    color: white;
+
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 120px;
+    background-color: #B7B7B7;
+    border-radius: 10px;
+    padding-top: -400px;
+}
+
+.profilImg {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+}
+
+.name {
+    background-color: #B7B7B7;
+}
+
+.email {
+    background-color: #B7B7B7;
+}
+
+.welcome {
+    background-color: #B7B7B7;
+}
