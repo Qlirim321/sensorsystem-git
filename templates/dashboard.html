@@ -1,3 +1,4 @@
+<!-- Sökresultat visas i en dropdown på hemsidan, huvudkoden för -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,31 +10,39 @@
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="styles_structure.css">
   <link rel="stylesheet" href="static/dashboard.css">
-  <link rel="stylesheet" href="calendar_style.css" />
-  <!-- Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <link rel="stylesheet" href="calendar_style.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(function() {
-      var timer; // variabel för att hantera fördröjning
+      var timer;
       $('#search-box').on('input', function() {
         var query = $(this).val();
-        if (query.length < 1) { // kontrollera om sökrutan är tom eller har mindre än en bokstav
-          $('#search-results').html(''); // rensa sökresultaten
+        if (query.length < 1) {
+          $('#search-results').html('');
         } else {
-          // använd en timer för att hantera fördröjning på 500 millisekunder
           clearTimeout(timer);
           timer = setTimeout(function() {
             $.getJSON('/search', {query: query}, function(data) {
               var html = '';
-              for (var i = 0; i < data.length; i++) {
-                html += '<a href="/profile/' + data[i].name + '"><div class="result">' + data[i].name + ', ' + data[i].address + ', ' + data[i].pers_nr + '</div></a>';
+              for (const senior of data) {
+                html += '<a href="/profile/' + senior.name + '"><div class="result">' + senior.name + ', ' + senior.address + ', ' + senior.pers_nr + '</div></a>';
               }
               $('#search-results').html(html);
             });
           }, 50);
+        }
+        setTimeout(function() {
+          var query = $('#search-box').val();
+          if (query.length < 1) {
+            $('#search-results').html('');
+          }
+        }, 50);
+      });
+      $('#search-box').on('keydown', function(event) {
+        if (event.keyCode === 13) {
+          event.preventDefault();
+          $('form.search-form').submit();
         }
       });
     });
@@ -43,10 +52,9 @@
   <!-- Header -->
   <header class="header">
     <div class="header-left">
-      <div class="logo-div">
-      </div>
+      <div class="logo-div"></div>
       <span class="material-icons-outlined">search</span>
-      <form class="search-form" method="post" action="{{ url_for('search_results') }}">
+      <form class="search-form" method="post" action="{{ url_for('search_results_page') }}">
         <input id="search-box" type="text" placeholder="Sök efter senior...">
       </form>
       <div id="search-results"></div>
@@ -59,7 +67,7 @@
   </header>
   <!-- End Header -->
   <div id="main-div" class="clearfix">
-    <div id="sidebar" >
+    <div id="sidebar">
       side bar
     </div>
     <div id="bodyarea-div" class="clearfix">

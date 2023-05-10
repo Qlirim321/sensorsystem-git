@@ -15,16 +15,6 @@ app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 app.config['MYSQL_SSL_CA'] = '.\DigiCertGlobalRootCA.crt.pem'
 
 import mysql.connector as mysql
-# MYSQL_USER = 'sensor'  # USER-NAME
-# MYSQL_PASS = 'Enesa12345!'  # MYSQL_PASS
-# MYSQL_DATABASE = 'sensor_test'  # DATABASE_NAME
-
-# connection = mysql.connect(user=MYSQL_USER,
-#                            passwd=MYSQL_PASS,
-#                            database=MYSQL_DATABASE,
-#                            host='sensorsystemdb.mysql.database.azure.com',
-
-#                            port = 3306)
 
 
 cnx= mysql.connect(user="sensor", password="Enesa12345!", host="sensorsystemdb.mysql.database.azure.com", port=3306, database="sensor_test")
@@ -36,6 +26,7 @@ import mysql.connector
 
 
 def updt_warning():
+    '''Function to update the warning levels of senior citizens based on their motion counts'''
     query = """
         UPDATE senior s
         INNER JOIN (
@@ -55,6 +46,7 @@ def updt_warning():
 
 @app.route('/search')
 def search():
+    ''' Enables searching for seniors'''
     query = request.args.get('query', '')
     sql.execute("SELECT name, address, pers_nr FROM senior WHERE name LIKE %s OR address LIKE %s OR pers_nr LIKE %s", ('%'+query+'%', '%'+query+'%', '%'+query+'%'))
     results = sql.fetchall()
@@ -69,18 +61,34 @@ def search_results():
     cnx.commit()
     return render_template('search_results.html', results=results)
 
+@app.route('/search_results_page', methods=['POST'])
+def search_results_page():
+    query = request.form.get('query')
+    if query is None:
+        flash('Missing query parameter')
+        return redirect(url_for('search_results'))
+
+    # Retrieve data from the database
+    sql.execute("SELECT name, address, pers_nr FROM senior WHERE name LIKE %s OR address LIKE %s OR pers_nr LIKE %s", ('%'+query+'%', '%'+query+'%', '%'+query+'%'))
+    results = sql.fetchall()
+    cnx.commit()
+
+    return render_template('search_results.html', results=results)
+
+
 @app.route('/dashboard')
 def dashboard():
+    ''' Overview of all seniors in the database, sorted by alert level and grouped by hub_id'''
     query = request.args.get('query', '')
-    # Hämta data från databasen
+    # Retrieve data from the databse
     sql.execute("SELECT pers_nr, hub_id, name, age, email, phone, address, warning FROM senior WHERE name LIKE %s OR address LIKE %s OR pers_nr LIKE %s", ('%'+query+'%', '%'+query+'%', '%'+query+'%'))
     seniorer = sql.fetchall()
     cnx.commit()
 
-    # Sortera seniorerna efter varningsnivå
+    # Sort seniors based on warning
     seniorer_sorted = sorted(seniorer, key=lambda x: x['warning'], reverse=True)
 
-    # Gruppera seniorerna efter hub_id
+    # Group seniors based on hub_id
     seniorer_grouped = {}
     for senior in seniorer_sorted:
         hub_id = senior['hub_id']
@@ -88,11 +96,11 @@ def dashboard():
             seniorer_grouped[hub_id] = []
         seniorer_grouped[hub_id].append(senior)
 
-    # Skicka data till mallen
     return render_template('dashboard.html', seniorer_grouped=seniorer_grouped, query=query)
 
 @app.route('/profile/<name>')
 def profile(name):
+    '''Hub id and name of senior are sent to profile.html'''
     sql.execute("SELECT * FROM senior WHERE name = %s", (name,))
     result = sql.fetchall()
     cnx.commit()
@@ -143,32 +151,6 @@ def signup():
 def about():
     return render_template('about.html')
 
-# Route för att hantera POST-requests från edit-formulären
-@app.route('/edit', methods=['POST'])
-def edit():
-    # Hämta data från edit-formuläret
-    id = request.form['id']
-    name = request.form['name']
-    email = request.form['email']
-
-    # Uppdatera informationen i databasen
-    sql.execute("UPDATE senior SET name=%s, email=%s WHERE id=%s", (name, email, id))
-    cnx.commit()
-
-    # Omdirigera till dashboarden
-    return redirect(url_for('dashboard'))
-
-# Dashboardens HTML-kod med edit-knappar
-
-# Sida med edit-formulär
-@app.route('/edit/<id>')
-def edit_form(pers_nr):
-    # Hämta informationen från databasen baserat på ID:t
-    sql.execute("SELECT * FROM senior WHERE pers_nr=%s", (pers_nr,))
-    person = sql.fetchone()
-
-    # Visa formuläret med befintlig information
-    return render_template('edit.html', person=person)
 
 # Edit-formuläret
 @app.route('/signup', methods=['POST'])
