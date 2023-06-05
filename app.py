@@ -13,6 +13,7 @@ app.config['MYSQL_DB'] = 'sensor_test'
 app.config['MYSQL_PORT'] = 3306
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 app.config['MYSQL_SSL_CA'] = '.\DigiCertGlobalRootCA.crt.pem'
+app.config['MYSQL_CONNECT_TIMEOUT'] = 600000
 
 import mysql.connector as mysql
 
