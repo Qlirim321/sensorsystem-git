@@ -11,6 +11,14 @@
     <h1>Profil för {{ name }}</h1>
     <div class="container flex">
       <h2>Statistik för {{ name }} i hubb {{ home }}</h2>
+      <!-- First plot -->
+      <div class="plot-container">
+        {{ plot1|safe }}
+      </div>
+      <!-- Second plot -->
+      <div class="plot-container">
+        {{ plot2|safe }}
+      </div>
     </div>
   </div>
 </body>

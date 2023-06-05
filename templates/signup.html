@@ -1,32 +1,38 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Signup Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
-  </head>
-  <body>
-    <div class="signup-form">
-      <h2>Signup Form</h2>
-      <form action="{{ url_for('signup') }}" method="POST">
-        <div class="form-group">
-          <label for="username">Username:</label>
-          <input type="text" id="username" name="username" required>
-        </div>
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" required>
-        </div>
-        <div class="form-group">
-          <label for="confirm-password">Confirm Password:</label>
-          <input type="password" id="confirm-password" name="confirm-password" required>
-        </div>
-        <button type="submit" class="btn">Signup</button>
-      </form>
-      <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
-    </div>
-  </body>
+<head>
+    <title>Sign Up</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/signup.css') }}">
+</head>
+<body>
+    <h1>Sign Up</h1>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class="flashes">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    <form method="POST" action="{{ url_for('signup') }}">
+        <label>Name:</label>
+        <input type="text" name="name" required><br>
+
+        <label>Email:</label>
+        <input type="email" name="email" required><br>
+
+        <label>Password:</label>
+        <input type="password" name="password" required><br>
+
+        <input type="submit" value="Sign Up">
+    </form>
+    <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a>.</p>
+</body>
 </html>
+
+
+
+
+
+
